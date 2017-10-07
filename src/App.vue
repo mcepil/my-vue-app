@@ -60,4 +60,8 @@ export default {
   display: block !important;
   align-self: inherit !important;
 }
+
+.md-sidenav-content {
+  width: 200px !important;
+}
 </style>

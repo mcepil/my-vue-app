@@ -1,23 +1,19 @@
 <template>
-  <md-card md-with-hover>
-    <md-card-media>
-      <img v-bind:src="activity.img" v-bind:alt="activity.title">
-    </md-card-media>
+    <md-card md-with-hover>
+      <md-card-media>
+        <img v-bind:src="activity.img" v-bind:alt="activity.title">
+      </md-card-media>
 
-    <md-card-header>
-      <div class="md-title">{{ activity.titile }}</div>
-      <div class="md-subhead">Elapsed: {{ getElapsedTime }}</div>
-    </md-card-header>
+      <md-card-header>
+        <div class="md-title">{{ activity.titile }}</div>
+        <div class="md-subhead">Elapsed: {{ getElapsedTime }}</div>
+      </md-card-header>
 
-    <md-card-actions>
-      <md-button @click="start(activity.id)">Start</md-button>
-      <md-button @click="stop(activity.id)">Stop</md-button>
-    </md-card-actions>
-
-    <!-- <md-card-content>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non, voluptas eius illo quas, saepe voluptate pariatur in deleniti minus sint. Excepturi.
-    </md-card-content> -->
-  </md-card>
+      <md-card-actions>
+        <md-button @click="start(activity.id)" v-bind:disabled="activity.started">Start</md-button>
+        <md-button @click="stop(activity.id)" v-bind:disabled="!activity.started">Stop</md-button>
+      </md-card-actions>
+    </md-card>
 </template>
 
 <script>
@@ -28,20 +24,38 @@ import {START_ACTIVITY, STOP_ACTIVITY} from '../store/mutationTypes'
 export default {
   name: 'TodoItem',
   props: ['activity'],
+  data () {
+    return {
+      interval: undefined,
+      now: Date.now()
+    }
+  },
+  created () {
+    var self = this
+    this.interval = setInterval(() => {
+      console.log('updating now')
+      self.$data.now = Date.now()
+    }, 500)
+  },
+  destroyed () {
+    clearInterval(this.interval)
+  },
   computed: {
     getElapsedTime () {
-      let {baseTime, startTime, stopTime} = this.activity
-      let msDiff
-      if (!startTime) {
-        msDiff = baseTime
-      } else {
-        msDiff = stopTime - startTime + baseTime
+      if (this.now) {
+        let {baseTime, startTime, stopTime} = this.activity
+        let msDiff
+        if (!startTime) {
+          msDiff = baseTime || 0
+        } else {
+          msDiff = (stopTime || new Date()) - startTime + baseTime
+        }
+        let elapsed = moment.duration(msDiff)
+        return (elapsed.days() * 24 + elapsed.hours()) + ':' +
+          elapsed.minutes() + ':' +
+          elapsed.seconds() + ':' +
+          elapsed.milliseconds()
       }
-      let elapsed = moment.duration(msDiff)
-      return (elapsed.days() * 24 + elapsed.hours()) + ':' +
-        elapsed.minutes() + ':' +
-        elapsed.seconds() + ':' +
-        elapsed.milliseconds()
     }
   },
   methods: mapActions({

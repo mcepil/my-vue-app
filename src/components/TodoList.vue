@@ -1,12 +1,14 @@
 <template>
-  <div id="todo-list">
-    <div md-with-hover 
-      class="todo-card" 
-      v-for="item in activities"
-      v-bind:key="item.id">
-      <todo-item v-bind:activity="item"></todo-item>
+  <md-layout md-row>
+    <div id="todo-list">
+      <div md-with-hover 
+        class="todo-card" 
+        v-for="item in activities"
+        v-bind:key="item.id">
+        <todo-item v-bind:activity="item"></todo-item>
+      </div>
     </div>
-  </div>
+  </md-layout>
 </template>
 
 <script>
@@ -27,5 +29,9 @@ export default {
 <style scoped>
 .todo-card {
   width: 200px;
+}
+
+.md-row {
+  padding: 25px 50px 25px 50px;
 }
 </style>
